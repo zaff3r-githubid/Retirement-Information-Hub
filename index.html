@@ -3,543 +3,1000 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Retirement Data Compendium - Observability Core</title>
+    <title>Retirement Information Hub</title>
+    <meta name="description" content="A cited, plain-English retirement reference covering Social Security, 401(k) withdrawals, Medicare, and planning milestones.">
     <style>
-        /* CSS VARIABLE-BASED DESIGN SYSTEM (WCAG 2.1 AA Compliant) */
         :root {
-            --bg-primary: #f8fafc;
-            --bg-card: #ffffff;
-            --text-main: #1e293b;
-            --text-muted: #475569;
-            --accent-color: #0f172a;
-            --accent-border: #cbd5e1;
-            --pro-color: #166534;
-            --pro-bg: #f0fdf4;
-            --con-color: #991b1b;
-            --con-bg: #fef2f2;
-            --focus-ring: #2563eb;
-            --obs-bg: #0f172a;
-            --obs-green: #38bdf8;
-            --obs-pulse: #22c55e;
+            /* Apple color palette */
+            --bg:           #f5f5f7;
+            --black:        #000000;
+            --text:         #1d1d1f;
+            --text-2:       #6e6e73;
+            --text-3:       #86868b;
+            --blue:         #0071e3;
+            --blue-hover:   #0077ed;
+            --white:        #ffffff;
+            --green:        #1a7a4a;
+            --red:          #c0392b;
+            --amber:        #7d5200;
+
+            /* Neomorphic shadows — calibrated for #f5f5f7 */
+            --neu-raise:    8px 8px 20px #d1d1d3, -8px -8px 20px #ffffff;
+            --neu-raise-lg: 14px 14px 32px #c8c8ca, -14px -14px 32px #ffffff;
+            --neu-inset:    inset 5px 5px 12px #d1d1d3, inset -5px -5px 12px #ffffff;
+            --neu-inset-sm: inset 3px 3px 7px #d1d1d3, inset -3px -3px 7px #ffffff;
+
+            --radius:       20px;
+            --radius-sm:    14px;
+            --radius-xs:    10px;
+            --sidebar-w:    220px;
+            --focus:        var(--blue);
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-primary);
-            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+                         "Helvetica Neue", Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 17px;
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* SCROLL PROGRESS */
+        #progress-bar {
+            position: fixed; top: 0; left: 0;
+            height: 3px; background: var(--blue);
+            width: 0%; z-index: 1000;
+            transition: width 0.1s linear;
+            border-radius: 0 2px 2px 0;
+        }
+
+        /* SKIP LINK */
+        .skip-link {
+            position: absolute; top: -999px; left: 0;
+            padding: 0.5rem 1rem;
+            background: var(--blue); color: var(--white);
+            font-size: 0.875rem; z-index: 9999;
+            border-radius: 0 0 8px 0;
+        }
+        .skip-link:focus { top: 3px; }
+
+        /* TOP NAV — Apple frosted glass */
+        .topnav {
+            position: sticky; top: 0;
+            background: rgba(0, 0, 0, 0.82);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            z-index: 100;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 2rem; height: 52px;
+        }
+        .topnav__brand {
+            color: var(--white); font-weight: 600;
+            font-size: 0.9rem; text-decoration: none;
+            letter-spacing: -0.01em;
+        }
+        .topnav__toggle {
+            background: none;
+            border: 1px solid rgba(255,255,255,0.25);
+            color: rgba(255,255,255,0.85);
+            padding: 0.28rem 0.8rem;
+            border-radius: 20px; cursor: pointer;
+            font-size: 0.825rem;
+            display: flex; align-items: center; gap: 0.4rem;
+            transition: all 0.2s;
+        }
+        .topnav__toggle:hover { border-color: rgba(255,255,255,0.5); color: var(--white); }
+        .topnav__toggle:focus { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+        /* MOBILE DRAWER */
+        .nav-drawer {
+            position: fixed; top: 52px; left: 0;
+            width: 100%; max-height: calc(100vh - 52px);
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 99;
+            transform: translateY(-110%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 1rem 0;
+        }
+        .nav-drawer.open { transform: translateY(0); }
+        .nav-drawer a {
+            display: block; padding: 0.7rem 2rem;
+            color: rgba(255,255,255,0.75); text-decoration: none;
+            font-size: 0.95rem; font-weight: 400;
+            transition: color 0.15s;
+        }
+        .nav-drawer a:hover, .nav-drawer a.active { color: var(--white); }
+        .nav-drawer a.active { color: #63b3ff; }
+
+        /* HERO — Apple-style dramatic dark */
+        .hero {
+            background: var(--black);
+            color: var(--white);
+            padding: 5rem 2rem 5rem;
+            text-align: center;
+        }
+        .hero__inner { max-width: 720px; margin: 0 auto; }
+        .hero__eyebrow {
+            font-size: 0.75rem; font-weight: 600;
+            letter-spacing: 0.12em; text-transform: uppercase;
+            color: #63b3ff; margin-bottom: 1.25rem;
+        }
+        .hero h1 {
+            font-size: clamp(2.2rem, 5.5vw, 3.5rem);
+            font-weight: 700; line-height: 1.1;
+            letter-spacing: -0.03em;
+            margin-bottom: 1.25rem;
+            background: linear-gradient(180deg, #ffffff 60%, rgba(255,255,255,0.55) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero p {
+            font-size: 1.125rem;
+            color: rgba(255,255,255,0.6);
+            max-width: 540px; margin: 0 auto;
             line-height: 1.6;
-            font-size: 1.125rem; /* 18px Base for high readability */
-            padding: 0 1rem;
+            font-weight: 300;
         }
 
-        header {
-            max-width: 1100px;
-            margin: 3rem auto 2rem auto;
-            border-bottom: 2px solid var(--accent-border);
-            padding-bottom: 1.5rem;
+        /* CONTENT WRAPPER */
+        .content-wrapper {
+            display: flex; max-width: 1100px; margin: 0 auto;
         }
 
-        header h1 {
-            font-size: 2.5rem;
-            color: var(--accent-color);
-            margin-bottom: 0.5rem;
+        /* SIDEBAR — desktop only */
+        .sidebar { display: none; }
+        @media (min-width: 1060px) {
+            .sidebar {
+                display: block;
+                width: var(--sidebar-w); flex-shrink: 0;
+                position: sticky; top: 52px;
+                height: calc(100vh - 52px);
+                overflow-y: auto;
+                padding: 2.5rem 0 2.5rem 1.5rem;
+            }
+            .sidebar__label {
+                font-size: 0.7rem; font-weight: 600;
+                text-transform: uppercase; letter-spacing: 0.1em;
+                color: var(--text-3); margin-bottom: 0.75rem;
+                padding-left: 0.875rem;
+            }
+            .sidebar nav a {
+                display: block; padding: 0.45rem 0.875rem;
+                color: var(--text-2); text-decoration: none;
+                font-size: 0.875rem; border-radius: var(--radius-xs);
+                transition: all 0.2s; line-height: 1.4;
+                margin-bottom: 2px;
+            }
+            .sidebar nav a:hover { color: var(--text); background: rgba(0,0,0,0.04); }
+            .sidebar nav a.active {
+                color: var(--blue); font-weight: 600;
+                box-shadow: var(--neu-inset-sm);
+                background: var(--bg);
+            }
+            .sidebar nav a:focus { outline: 2px solid var(--focus); outline-offset: 2px; }
         }
 
-        .disclaimer-box {
-            background-color: #f1f5f9;
-            border-left: 4px solid var(--text-muted);
-            padding: 1rem;
-            margin-top: 1rem;
-            font-size: 1rem;
-            font-style: italic;
+        /* MAIN CONTENT */
+        .main-content { flex: 1; min-width: 0; padding: 0 2rem; }
+
+        /* SECTIONS */
+        .section { padding: 4rem 0; border-bottom: 1px solid rgba(0,0,0,0.06); }
+        .section:last-child { border-bottom: none; }
+
+        .section__eyebrow {
+            font-size: 0.75rem; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.1em;
+            color: var(--blue); margin-bottom: 0.5rem;
+        }
+        .section h2 {
+            font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+            font-weight: 700; color: var(--text);
+            margin-bottom: 0.875rem; line-height: 1.1;
+            letter-spacing: -0.025em;
+        }
+        .section__intro {
+            color: var(--text-2); margin-bottom: 2rem;
+            max-width: 600px; font-size: 1rem; line-height: 1.65;
         }
 
-        main {
-            max-width: 1100px;
-            margin: 0 auto;
+        /* SOURCE LINK */
+        .source-link {
+            display: inline-flex; align-items: center; gap: 0.25rem;
+            color: var(--blue); text-decoration: none;
+            font-size: 0.875rem; font-weight: 500;
+            transition: opacity 0.15s;
+        }
+        .source-link:hover { opacity: 0.7; text-decoration: underline; }
+        .source-link:focus { outline: 2px solid var(--focus); border-radius: 4px; }
+        .source-link::after { content: " →"; }
+
+        /* DECISION MAP */
+        .map-grid {
+            display: grid; grid-template-columns: 1fr; gap: 1.25rem;
+        }
+        @media (min-width: 580px) { .map-grid { grid-template-columns: 1fr 1fr; } }
+
+        .map-card {
+            background: var(--bg);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--neu-raise);
+            display: flex; gap: 1.1rem; align-items: flex-start;
+            transition: box-shadow 0.3s;
+        }
+        .map-card:hover { box-shadow: var(--neu-raise-lg); }
+        .map-card__num {
+            width: 38px; height: 38px; flex-shrink: 0;
+            background: var(--bg);
+            box-shadow: var(--neu-inset-sm);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.9rem; color: var(--blue);
+        }
+        .map-card h3 {
+            font-size: 0.95rem; font-weight: 600;
+            color: var(--text); margin-bottom: 0.3rem;
+            letter-spacing: -0.01em;
+        }
+        .map-card p { font-size: 0.85rem; color: var(--text-2); line-height: 1.55; }
+
+        /* TIMELINE */
+        .timeline { position: relative; padding-left: 2.75rem; }
+        .timeline::before {
+            content: ''; position: absolute;
+            left: 22px; top: 10px; bottom: 10px; width: 2px;
+            background: linear-gradient(to bottom, var(--blue), rgba(0,113,227,0.2));
+            border-radius: 2px;
+        }
+        .timeline-item { position: relative; padding-bottom: 2.5rem; }
+        .timeline-item:last-child { padding-bottom: 0; }
+        .timeline-item::before {
+            content: ''; position: absolute;
+            left: -2.25rem; top: 6px;
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            background: var(--bg);
+            box-shadow: 3px 3px 7px #d1d1d3, -3px -3px 7px #ffffff;
+            border: 2.5px solid var(--blue);
+        }
+        .timeline-item__age {
+            display: inline-block;
+            background: var(--bg);
+            box-shadow: var(--neu-inset-sm);
+            color: var(--blue); font-weight: 700; font-size: 0.85rem;
+            padding: 0.2rem 0.7rem; border-radius: 20px;
+            margin-bottom: 0.4rem; letter-spacing: -0.01em;
+        }
+        .timeline-item h3 {
+            font-size: 1rem; font-weight: 600; color: var(--text);
+            margin-bottom: 0.3rem; letter-spacing: -0.015em;
+        }
+        .timeline-item p {
+            font-size: 0.875rem; color: var(--text-2);
+            line-height: 1.65; max-width: 520px;
         }
 
-        /* NAVIGATION TABS */
-        .tab-navigation {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
+        /* PROS / CONS */
+        .pros-cons {
+            display: grid; grid-template-columns: 1fr; gap: 1.25rem; margin-top: 1.75rem;
+        }
+        @media (min-width: 620px) { .pros-cons { grid-template-columns: 1fr 1fr; } }
+
+        .pc-card {
+            background: var(--bg);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--neu-raise);
+            border-top: 3px solid transparent;
+        }
+        .pc-card--pros { border-top-color: var(--green); }
+        .pc-card--cons { border-top-color: var(--red); }
+
+        .pc-card h3 {
+            font-size: 0.875rem; font-weight: 600;
+            margin-bottom: 1rem; letter-spacing: -0.01em;
+        }
+        .pc-card--pros h3 { color: var(--green); }
+        .pc-card--cons h3 { color: var(--red); }
+
+        .pc-card ul { list-style: none; }
+        .pc-card li {
+            padding-left: 1.25rem; position: relative;
+            margin-bottom: 0.65rem; font-size: 0.875rem;
+            color: var(--text); line-height: 1.6;
+        }
+        .pc-card--pros li::before { content: '↑'; position: absolute; left: 0; color: var(--green); font-weight: 700; }
+        .pc-card--cons li::before { content: '↓'; position: absolute; left: 0; color: var(--red); font-weight: 700; }
+
+        /* CARDS GRID */
+        .cards-grid {
+            display: grid; grid-template-columns: 1fr; gap: 1.25rem; margin-top: 1.75rem;
+        }
+        @media (min-width: 480px) { .cards-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 720px) { .cards-grid { grid-template-columns: repeat(3, 1fr); } }
+
+        .card {
+            background: var(--bg);
+            border-radius: var(--radius);
+            padding: 1.4rem;
+            box-shadow: var(--neu-raise);
+            transition: box-shadow 0.25s;
+        }
+        .card:hover { box-shadow: var(--neu-raise-lg); }
+        .card h3 {
+            font-size: 0.9rem; font-weight: 600; color: var(--text);
+            margin-bottom: 0.5rem; letter-spacing: -0.01em;
+        }
+        .card p { font-size: 0.85rem; color: var(--text-2); line-height: 1.65; }
+        .card a { display: inline-block; margin-top: 0.5rem; font-size: 0.8rem; color: var(--blue); }
+
+        /* COMPARE TABLE */
+        .compare-wrap {
+            margin-top: 1.75rem;
+            background: var(--bg);
+            border-radius: var(--radius);
+            box-shadow: var(--neu-raise);
+            overflow: hidden;
+        }
+        .compare-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+        .compare-table th {
+            background: rgba(0,0,0,0.88);
+            color: var(--white);
+            padding: 0.875rem 1.1rem; text-align: left;
+            font-weight: 600; font-size: 0.825rem; letter-spacing: -0.01em;
+        }
+        .compare-table td {
+            padding: 0.75rem 1.1rem; border-bottom: 1px solid rgba(0,0,0,0.06);
+            vertical-align: top; line-height: 1.55; color: var(--text);
+        }
+        .compare-table tr:last-child td { border-bottom: none; }
+        .compare-table tr:nth-child(even) td { background: rgba(0,0,0,0.02); }
+        .compare-table .label-col { font-weight: 600; color: var(--text); }
+        .tag-good {
+            display: inline-block;
+            background: rgba(26,122,74,0.1); color: var(--green);
+            border-radius: 20px; padding: 0.1rem 0.55rem;
+            font-size: 0.75rem; font-weight: 600;
+        }
+
+        /* CALLOUT */
+        .callout {
+            margin-top: 1.75rem;
+            background: var(--bg);
+            box-shadow: var(--neu-inset);
+            border-radius: var(--radius);
+            padding: 1.25rem 1.5rem;
+            font-size: 0.875rem; color: var(--text-2); line-height: 1.65;
+        }
+        .callout strong { color: var(--amber); }
+
+        /* TOPIC GRID */
+        .topic-grid {
+            display: grid; grid-template-columns: 1fr; gap: 1.25rem; margin-top: 1.75rem;
+        }
+        @media (min-width: 480px) { .topic-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 720px) { .topic-grid { grid-template-columns: repeat(3, 1fr); } }
+
+        .topic-card {
+            background: var(--bg);
+            border-radius: var(--radius);
+            padding: 1.4rem;
+            box-shadow: var(--neu-raise);
+            transition: box-shadow 0.25s;
+        }
+        .topic-card:hover { box-shadow: var(--neu-raise-lg); }
+        .topic-card h3 {
+            font-size: 0.9rem; font-weight: 600; color: var(--text);
+            margin-bottom: 0.4rem; letter-spacing: -0.01em;
+        }
+        .topic-card p { font-size: 0.85rem; color: var(--text-2); line-height: 1.65; }
+
+        /* CHECKLIST */
+        .checklist-header {
+            display: flex; align-items: center; gap: 1.25rem;
             margin-bottom: 2rem;
         }
-
-        .tab-btn {
-            background-color: #e2e8f0;
-            color: var(--text-main);
-            border: 1px solid var(--accent-border);
-            padding: 0.75rem 1.25rem;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: all 0.2s ease;
+        .checklist-progress__bar {
+            flex: 1; height: 8px;
+            background: var(--bg);
+            box-shadow: var(--neu-inset-sm);
+            border-radius: 20px; overflow: hidden;
         }
-
-        .tab-btn:hover, .tab-btn:focus {
-            background-color: var(--accent-color);
-            color: white;
-            outline: 3px solid var(--focus-ring);
+        .checklist-progress__fill {
+            height: 100%; background: var(--blue); border-radius: 20px;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
-        .tab-btn.active {
-            background-color: var(--accent-color);
-            color: white;
-            border-color: var(--accent-color);
+        .checklist-progress__text {
+            font-size: 0.8rem; color: var(--text-3);
+            white-space: nowrap; font-variant-numeric: tabular-nums;
         }
-
-        /* CONTENT TEMPLATE */
-        .content-panel {
-            display: none;
-            background: var(--bg-card);
-            border: 1px solid var(--accent-border);
-            border-radius: 8px;
-            padding: 2rem;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-            margin-bottom: 3rem;
+        .checklist-sections {
+            display: grid; grid-template-columns: 1fr; gap: 1.25rem;
         }
+        @media (min-width: 620px) { .checklist-sections { grid-template-columns: repeat(2, 1fr); } }
 
-        .content-panel.active {
-            display: block;
-        }
-
-        .content-panel h2 {
-            font-size: 1.8rem;
-            margin-bottom: 1rem;
-            color: var(--accent-color);
-            border-bottom: 1px solid var(--accent-border);
-            padding-bottom: 0.5rem;
-        }
-
-        .content-panel p {
-            margin-bottom: 1.5rem;
-        }
-
-        /* MATRIX LAYOUT FOR PROS/CONS */
-        .matrix-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-            margin: 1.5rem 0;
-        }
-
-        @media (min-width: 768px) {
-            .matrix-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        .matrix-box {
-            padding: 1.2rem;
-            border-radius: 6px;
-            border: 1px solid transparent;
-        }
-
-        .matrix-box.pros {
-            background-color: var(--pro-bg);
-            border-color: #bbf7d0;
-        }
-
-        .matrix-box.cons {
-            background-color: var(--con-bg);
-            border-color: #fca5a5;
-        }
-
-        .matrix-box h3 {
-            font-size: 1.2rem;
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .matrix-box.pros h3 { color: var(--pro-color); }
-        .matrix-box.cons h3 { color: var(--con-color); }
-
-        .matrix-box ul {
-            list-style-type: square;
-            margin-left: 1.25rem;
-        }
-
-        .matrix-box li {
-            margin-bottom: 0.5rem;
-            font-size: 1rem;
-        }
-
-        /* CITATION AND SOURCE FOOTER */
-        .source-link {
-            display: inline-block;
-            margin-top: 1rem;
-            color: #1d4ed8;
-            text-decoration: underline;
-            font-weight: 500;
-        }
-
-        .source-link:focus {
-            outline: 3px solid var(--focus-ring);
-        }
-
-        /* AI OBSERVABILITY DASHBOARD PANEL */
-        .observability-section {
-            background: var(--obs-bg);
-            color: #f8fafc;
-            border-radius: 8px;
+        .checklist-card {
+            background: var(--bg);
+            border-radius: var(--radius);
             padding: 1.5rem;
-            margin: 3rem auto;
-            max-width: 1100px;
-            border: 1px solid #334155;
+            box-shadow: var(--neu-raise);
         }
-
-        .obs-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-            border-bottom: 1px solid #334155;
-            padding-bottom: 0.5rem;
+        .checklist-card h3 {
+            font-size: 0.875rem; font-weight: 600; color: var(--text);
+            margin-bottom: 1rem; padding-bottom: 0.625rem;
+            border-bottom: 1px solid rgba(0,0,0,0.07);
+            letter-spacing: -0.01em;
         }
-
-        .obs-title {
-            color: var(--obs-green);
-            font-family: monospace;
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
-
-        .obs-indicator {
-            font-family: monospace;
-            font-size: 0.85rem;
-            background: #1e293b;
-            padding: 0.2rem 0.6rem;
+        .check-item { display: flex; align-items: flex-start; gap: 0.65rem; margin-bottom: 0.625rem; }
+        .check-item input[type="checkbox"] {
+            width: 18px; height: 18px; flex-shrink: 0;
+            margin-top: 2px; accent-color: var(--blue); cursor: pointer;
             border-radius: 4px;
-            color: #a7f3d0;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+        }
+        .check-item label {
+            font-size: 0.85rem; color: var(--text);
+            cursor: pointer; line-height: 1.55;
+        }
+        .check-item input:checked + label { color: var(--text-3); text-decoration: line-through; }
+
+        .checklist-reset {
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            margin-top: 1.5rem;
+            background: var(--bg);
+            box-shadow: var(--neu-raise);
+            border: none;
+            padding: 0.5rem 1.1rem; border-radius: 20px;
+            font-size: 0.825rem; color: var(--text-2);
+            cursor: pointer; transition: all 0.2s;
+        }
+        .checklist-reset:hover { color: var(--red); box-shadow: var(--neu-inset-sm); }
+        .checklist-reset:focus { outline: 2px solid var(--focus); }
+
+        /* SUBSECTION DIVIDER */
+        .subsection {
+            margin-top: 2.5rem; padding-top: 2.5rem;
+            border-top: 1px solid rgba(0,0,0,0.06);
+        }
+        .subsection h3 {
+            font-size: 1.15rem; font-weight: 700; color: var(--text);
+            margin-bottom: 0.4rem; letter-spacing: -0.02em;
+        }
+        .subsection p {
+            font-size: 0.9rem; color: var(--text-2);
+            max-width: 580px; margin-bottom: 0.5rem; line-height: 1.65;
         }
 
-        .obs-dot {
-            width: 8px;
-            height: 8px;
-            background-color: var(--obs-pulse);
-            border-radius: 50%;
-            display: inline-block;
+        /* SOURCES */
+        .sources-list { margin-top: 1.75rem; list-style: none; counter-reset: source; }
+        .sources-list li {
+            counter-increment: source;
+            display: flex; gap: 1rem; align-items: baseline;
+            padding: 0.625rem 0; border-bottom: 1px solid rgba(0,0,0,0.06);
+            font-size: 0.875rem;
         }
-
-        .obs-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 1rem;
-            font-family: monospace;
+        .sources-list li::before {
+            content: counter(source); min-width: 1.5rem;
+            color: var(--text-3); font-size: 0.8rem;
+            font-variant-numeric: tabular-nums;
         }
+        .sources-list a { color: var(--blue); text-decoration: none; line-height: 1.5; }
+        .sources-list a:hover { text-decoration: underline; }
+        .sources-list a:focus { outline: 2px solid var(--focus); border-radius: 4px; }
 
-        .obs-card {
-            background: #1e293b;
-            padding: 1rem;
-            border-radius: 4px;
-            border-left: 3px solid var(--obs-green);
-            transition: all 0.3s ease;
+        /* FOOTER */
+        .footer {
+            background: #1d1d1f;
+            color: rgba(255,255,255,0.5);
+            padding: 3rem 2rem;
+            font-size: 0.825rem;
         }
+        .footer__inner { max-width: 1100px; margin: 0 auto; }
+        .footer p { margin-bottom: 0.3rem; line-height: 1.6; }
 
-        .obs-card.highlight {
-            border-left-color: var(--obs-pulse);
-            background: #14532d;
+        /* BACK TO TOP */
+        #back-to-top {
+            position: fixed; bottom: 1.75rem; right: 1.75rem;
+            background: var(--bg);
+            box-shadow: var(--neu-raise);
+            color: var(--blue);
+            border: none; width: 46px; height: 46px;
+            border-radius: 50%; cursor: pointer;
+            font-size: 1.1rem;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; transform: translateY(10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 50;
         }
+        #back-to-top.visible { opacity: 1; transform: translateY(0); }
+        #back-to-top:hover { box-shadow: var(--neu-inset-sm); }
+        #back-to-top:focus { outline: 2px solid var(--focus); }
 
-        .obs-label {
-            font-size: 0.8rem;
-            color: #94a3b8;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+        /* FADE IN */
+        .fade-in {
+            opacity: 0; transform: translateY(18px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
         }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
 
-        .obs-value {
-            font-size: 1.25rem;
-            font-weight: bold;
-            color: #f1f5f9;
-            margin-top: 0.25rem;
-        }
-
-        footer {
-            max-width: 1100px;
-            margin: 2rem auto;
-            border-top: 1px solid var(--accent-border);
-            padding-top: 2rem;
-            font-size: 0.95rem;
-            color: var(--text-muted);
+        @media print {
+            .topnav, .sidebar, #progress-bar, #back-to-top, .nav-drawer { display: none !important; }
+            body { font-size: 11pt; background: white; }
+            .section { page-break-inside: avoid; }
+            * { box-shadow: none !important; }
+            a::after { content: " (" attr(href) ")"; font-size: 0.75em; }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>Retirement Data Compendium</h1>
-        <p>An objective, verifiable regulatory index for long-range horizon evaluation.</p>
-        <div class="disclaimer-box" role="note">
-            <strong>Regulatory Standard Disclaimer:</strong> This platform features verified legal, statutory, and regulatory resource criteria strictly for educational reference. It does not provide personalized financial, tax, or legal advice.
-        </div>
-    </header>
+<div id="progress-bar" role="progressbar" aria-label="Page scroll progress"></div>
+<a href="#main" class="skip-link">Skip to main content</a>
 
-    <main>
-        <nav class="tab-navigation" role="tablist" aria-label="Retirement Topics">
-            <button class="tab-btn active" role="tab" aria-selected="true" aria-controls="panel-age" id="tab-age">1. Retirement Age</button>
-            <button class="tab-btn" role="tab" aria-selected="false" aria-controls="panel-ss" id="tab-ss">2. Social Security</button>
-            <button class="tab-btn" role="tab" aria-selected="false" aria-controls="panel-work" id="tab-work">3. Working in Retirement</button>
-            <button class="tab-btn" role="tab" aria-selected="false" aria-controls="panel-401k" id="tab-401k">4. 401(k) / IRA Limits</button>
-            <button class="tab-btn" role="tab" aria-selected="false" aria-controls="panel-medical" id="tab-medical">5. Medical & HSA Rules</button>
-            <button class="tab-btn" role="tab" aria-selected="false" aria-controls="panel-discounts" id="tab-discounts">6. Over-50 Benefits</button>
+<nav class="topnav" aria-label="Site navigation">
+    <a href="#" class="topnav__brand">Retirement Information Hub</a>
+    <button class="topnav__toggle" aria-expanded="false" aria-controls="nav-drawer" aria-label="Toggle navigation menu">
+        <span id="menu-icon">&#9776;</span> Menu
+    </button>
+</nav>
+
+<div id="nav-drawer" class="nav-drawer" aria-hidden="true">
+    <a href="#decision-map">Decision map</a>
+    <a href="#ages">Age milestones</a>
+    <a href="#social-security">Social Security</a>
+    <a href="#withdrawals">401(k) &amp; IRAs</a>
+    <a href="#medical">Medicare</a>
+    <a href="#more">Other topics</a>
+    <a href="#checklist">Checklist</a>
+    <a href="#sources">Sources</a>
+</div>
+
+<header class="hero">
+    <div class="hero__inner">
+        <p class="hero__eyebrow">Retirement Information Hub</p>
+        <h1>Every rule, every decision,<br>every official source — organized.</h1>
+        <p>Plain-English summaries of public regulations and common decision points, each linked to official sources so you can verify before you act.</p>
+    </div>
+</header>
+
+<div class="content-wrapper">
+
+    <aside class="sidebar" aria-label="Table of contents">
+        <p class="sidebar__label">On this page</p>
+        <nav>
+            <a href="#decision-map">Decision map</a>
+            <a href="#ages">Age milestones</a>
+            <a href="#social-security">Social Security</a>
+            <a href="#withdrawals">401(k) &amp; IRAs</a>
+            <a href="#medical">Medicare</a>
+            <a href="#more">Other topics</a>
+            <a href="#checklist">Checklist</a>
+            <a href="#sources">Sources</a>
         </nav>
+    </aside>
 
-        <section id="panel-age" class="content-panel active" role="tabpanel" aria-labelledby="tab-age">
-            <h2>Statutory Definitions of Retirement Age</h2>
-            <p>Under United States federal statutes, "Retirement Age" is not a uniform data point. It shifts depending on whether a citizen is referencing Social Security rules, pension parameters, or penalty-free asset accessibility terms.</p>
-            
-            <div class="matrix-grid">
-                <div class="matrix-box pros">
-                    <h3>Early Retirement Framework</h3>
+    <main id="main" class="main-content">
+
+        <!-- DECISION MAP -->
+        <section id="decision-map" class="section fade-in">
+            <p class="section__eyebrow">Start here</p>
+            <h2>Five questions to ask</h2>
+            <p class="section__intro">Retirement isn't one decision — it's five overlapping ones. Knowing which question you're asking prevents conflating them.</p>
+            <div class="map-grid">
+                <div class="map-card">
+                    <div class="map-card__num">1</div>
+                    <div>
+                        <h3>When to stop working</h3>
+                        <p>There is no single U.S. retirement age. Work, health, savings, and employer benefits drive this personal date.</p>
+                    </div>
+                </div>
+                <div class="map-card">
+                    <div class="map-card__num">2</div>
+                    <div>
+                        <h3>When to claim benefits</h3>
+                        <p>Social Security can start at 62, full retirement age is 66–67 by birth year, and delaying increases benefits up to age 70.</p>
+                    </div>
+                </div>
+                <div class="map-card">
+                    <div class="map-card__num">3</div>
+                    <div>
+                        <h3>How to cover healthcare</h3>
+                        <p>Medicare typically begins at 65, but enrollment timing and employer coverage can change what makes sense.</p>
+                    </div>
+                </div>
+                <div class="map-card">
+                    <div class="map-card__num">4</div>
+                    <div>
+                        <h3>How to draw income</h3>
+                        <p>401(k), IRA, pension, Social Security, and part-time work each have different tax and flexibility tradeoffs.</p>
+                    </div>
+                </div>
+                <div class="map-card">
+                    <div class="map-card__num">5</div>
+                    <div>
+                        <h3>How to protect the family</h3>
+                        <p>Spousal benefits, survivor benefits, beneficiary forms, powers of attorney, and fraud prevention can matter as much as account balances.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- AGE MILESTONES -->
+        <section id="ages" class="section fade-in">
+            <p class="section__eyebrow">Milestones</p>
+            <h2>Retirement ages worth knowing</h2>
+            <p class="section__intro">Key federal age thresholds that affect benefits, penalties, and account rules.</p>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <span class="timeline-item__age">50</span>
+                    <h3>Catch-up contributions may begin</h3>
+                    <p>Many retirement accounts allow higher annual contribution limits starting at 50. Limits change year to year — verify with current IRS guidance before maximizing.</p>
+                </div>
+                <div class="timeline-item">
+                    <span class="timeline-item__age">59½</span>
+                    <h3>Early withdrawal penalty generally ends</h3>
+                    <p>The common 10% additional IRS tax on early distributions no longer applies after this age. Withdrawals are still taxable income — only the penalty expires.</p>
+                </div>
+                <div class="timeline-item">
+                    <span class="timeline-item__age">62</span>
+                    <h3>Earliest Social Security retirement claim</h3>
+                    <p>Claiming at 62 creates earlier income, but monthly benefits are permanently reduced compared with claiming at full retirement age.</p>
+                </div>
+                <div class="timeline-item">
+                    <span class="timeline-item__age">65</span>
+                    <h3>Medicare eligibility begins</h3>
+                    <p>Most people first become eligible for Medicare at 65. The initial enrollment window opens before the birthday month. Missing it can trigger lasting premium penalties.</p>
+                </div>
+                <div class="timeline-item">
+                    <span class="timeline-item__age">66–67</span>
+                    <h3>Full retirement age (FRA)</h3>
+                    <p>Social Security FRA depends on birth year — it reaches 67 for those born in 1960 or later. At FRA, you receive 100% of your calculated benefit with no permanent reduction.</p>
+                </div>
+                <div class="timeline-item">
+                    <span class="timeline-item__age">70</span>
+                    <h3>Delayed Social Security credits stop</h3>
+                    <p>Waiting past FRA earns delayed retirement credits (roughly 8% per year). These credits stop accruing at 70, so there is no benefit to delaying beyond that age.</p>
+                </div>
+                <div class="timeline-item">
+                    <span class="timeline-item__age">73+</span>
+                    <h3>Required Minimum Distributions</h3>
+                    <p>RMD start ages depend on birth year and account type. Missing a required withdrawal can trigger IRS penalties — verify the rules before your first required year.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SOCIAL SECURITY -->
+        <section id="social-security" class="section fade-in">
+            <p class="section__eyebrow">Social Security</p>
+            <h2>When to claim Social Security</h2>
+            <p class="section__intro">Benefits can begin as early as 62 with sufficient work history. Full retirement age is 67 for those born in 1960 or later. Delaying past FRA earns credits that stop at 70.</p>
+            <a class="source-link" href="https://www.ssa.gov/benefits/retirement" target="_blank" rel="noopener">SSA retirement benefits</a>
+            <div class="pros-cons">
+                <div class="pc-card pc-card--pros">
+                    <h3>Reasons to claim earlier</h3>
                     <ul>
-                        <li><strong>Earliest Common Window:</strong> Age 62 for partial Social Security draws.</li>
-                        <li><strong>System Benefit:</strong> Early termination of mandatory workforce participation.</li>
-                        <li><strong>Tradeoff:</strong> Permanent lifetime reductions up to 30% on monthly distributions.</li>
+                        <li>Creates income sooner if work stops, health changes, or cash flow is tight</li>
+                        <li>May reduce early pressure on savings</li>
+                        <li>Can make sense when life expectancy or caregiving needs point that way</li>
                     </ul>
                 </div>
-                <div class="matrix-box cons">
-                    <h3>Full Retirement Age (FRA) Framework</h3>
+                <div class="pc-card pc-card--cons">
+                    <h3>Tradeoffs of claiming earlier</h3>
                     <ul>
-                        <li><strong>Target Benchmark:</strong> Age 67 for all individuals born in 1960 or later.</li>
-                        <li><strong>System Benefit:</strong> Eligibility for 100% of the calculated primary insurance amount (PIA).</li>
-                        <li><strong>Tradeoff:</strong> Requires extended workforce persistence compared to earlier options.</li>
+                        <li>Monthly benefit is permanently reduced before full retirement age</li>
+                        <li>Working while under FRA can temporarily reduce current benefits</li>
+                        <li>Lower monthly income matters more if one spouse significantly outlives the other</li>
                     </ul>
                 </div>
             </div>
-            <a href="https://www.ssa.gov/oact/solvency/provisions/retireage.html" target="_blank" class="source-link">Source: Social Security Administration (Solvency Provisions) &rarr;</a>
+
+            <div class="subsection">
+                <p class="section__eyebrow">Family benefits</p>
+                <h3>Spousal and survivor benefits</h3>
+                <p>Social Security extends to spouses, divorced spouses, and survivors. When one spouse earned significantly more or paused work for caregiving, checking both records can reveal benefits that might otherwise be missed.</p>
+                <a class="source-link" href="https://www.ssa.gov/family" target="_blank" rel="noopener">SSA family benefits</a>
+                <a class="source-link" style="margin-left:1.25rem;" href="https://www.ssa.gov/survivor" target="_blank" rel="noopener">SSA survivor benefits</a>
+            </div>
         </section>
 
-        <section id="panel-ss" class="content-panel" role="tabpanel" aria-labelledby="tab-ss">
-            <h2>Social Security Claiming Timelines</h2>
-            <p>The selection of a deployment date for Social Security distributions fundamentally dictates monthly cash flows via immutable legal formulas.</p>
-            
-            <div class="matrix-grid">
-                <div class="matrix-box pros">
-                    <h3>Early Baseline (Age 62)</h3>
-                    <ul>
-                        <li><strong>Immediate Cash Flow:</strong> Payouts begin immediately, which can offset early career transitions or health-related work stops.</li>
-                        <li><strong>Permanent Scale Reduction:</strong> Monthly benefits drop permanently by up to 30% because payouts span a statistically longer life expectancy window.</li>
-                    </ul>
+        <!-- 401K / IRA -->
+        <section id="withdrawals" class="section fade-in">
+            <p class="section__eyebrow">401(k), IRA, pensions</p>
+            <h2>Retirement account withdrawals</h2>
+            <p class="section__intro">IRS guidance says 401(k) distributions are generally taxable income. Withdrawals before age 59½ may also face a 10% additional tax unless a specific exception applies.</p>
+            <a class="source-link" href="https://www.irs.gov/retirement-plans/plan-participant-employee/401k-resource-guide-plan-participants-general-distribution-rules" target="_blank" rel="noopener">IRS 401(k) distribution rules</a>
+            <div class="cards-grid">
+                <div class="card">
+                    <h3>Advantages</h3>
+                    <p>Tax-advantaged growth, possible employer match, automatic payroll contributions, and broad investment options over time.</p>
                 </div>
-                <div class="matrix-box cons">
-                    <h3>Delayed Baseline (Age 70 Allocation)</h3>
-                    <ul>
-                        <li><strong>Delayed Credits:</strong> Accumulates an unconditional 8% simple interest increase per year for every year filing is delayed between age 67 and 70.</li>
-                        <li><strong>Max Optimization:</strong> Results in roughly a 24% permanent baseline layout surge over standard FRA values. Growth stops unconditionally at age 70.</li>
-                    </ul>
+                <div class="card">
+                    <h3>Tradeoffs</h3>
+                    <p>Withdrawals raise taxable income, early access can be penalized, and market conditions affect account value at distribution.</p>
+                </div>
+                <div class="card">
+                    <h3>Questions to verify</h3>
+                    <p>Rollover options, RMD timing, Roth vs. traditional tax treatment, beneficiary designations, employer plan rules, and state taxes.</p>
                 </div>
             </div>
-            <a href="https://www.ssa.gov/faqs/en/questions/KA-01897.html" target="_blank" class="source-link">Source: Social Security Administration FAQ &rarr;</a>
+            <div class="callout">
+                <strong>Required Minimum Distributions (RMDs):</strong> Most traditional retirement accounts require annual withdrawals beginning at age 73 (shifting to 75 in 2033 under current law). Missed RMDs can trigger significant IRS penalties.
+                <a href="https://www.irs.gov/retirement-plans/retirement-plan-and-ira-required-minimum-distributions-faqs" target="_blank" rel="noopener" class="source-link" style="display:block; margin-top:0.5rem;">IRS RMD FAQs</a>
+            </div>
         </section>
 
-        <section id="panel-work" class="content-panel" role="tabpanel" aria-labelledby="tab-work">
-            <h2>The Phased Retirement Earnings Test</h2>
-            <p>Choosing to work part-time or consult while concurrently drawing early Social Security benefits triggers strict structural earnings limits monitored by the federal government.</p>
-            
-            <div class="matrix-grid">
-                <div class="matrix-box pros">
-                    <h3>The Pre-FRA Earned Income Rules</h3>
-                    <ul>
-                        <li><strong>2026 Earnings Cap:</strong> Individuals under Full Retirement Age can earn up to $24,480/year without impact. Any income earned above this cap triggers an automatic benefit reduction.</li>
-                        <li><strong>The System Reduction:</strong> The Social Security Administration withholds $1 of benefits for every $2 earned above the annual threshold.</li>
-                    </ul>
-                </div>
-                <div class="matrix-box cons">
-                    <h3>Post-FRA Adjustments & Recalculation</h3>
-                    <ul>
-                        <li><strong>Zero Penalties Post-FRA:</strong> Once you hit your exact Full Retirement Age (67), the earnings test completely expires. You can earn unlimited income with zero benefit reductions.</li>
-                        <li><strong>Benefit Correction:</strong> Withheld funds are not permanently lost. At FRA, the system automatically recalculates your benefit upward to account for the monthly payments that were withheld.</li>
-                    </ul>
-                </div>
+        <!-- MEDICARE -->
+        <section id="medical" class="section fade-in">
+            <p class="section__eyebrow">Healthcare</p>
+            <h2>Medicare coverage choices</h2>
+            <p class="section__intro">Medicare is the main federal health program for people 65 and older. The two main tracks have different cost structures, provider access, and flexibility tradeoffs.</p>
+            <a class="source-link" href="https://www.medicare.gov/what-medicare-covers/your-medicare-coverage-choices" target="_blank" rel="noopener">Medicare.gov: Coverage choices</a>
+            <div class="compare-wrap">
+                <table class="compare-table" aria-label="Medicare coverage comparison">
+                    <thead>
+                        <tr>
+                            <th style="width:28%">Feature</th>
+                            <th>Original Medicare<br><small style="font-weight:400; opacity:0.75;">Part A + B (+ Part D, Medigap)</small></th>
+                            <th>Medicare Advantage<br><small style="font-weight:400; opacity:0.75;">Part C — private plan</small></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="label-col">Provider access</td>
+                            <td>Broad — any doctor who accepts Medicare</td>
+                            <td>Usually limited to plan network</td>
+                        </tr>
+                        <tr>
+                            <td class="label-col">Out-of-pocket cap</td>
+                            <td>No built-in cap without Medigap</td>
+                            <td><span class="tag-good">Yes</span> — annual limit on covered services</td>
+                        </tr>
+                        <tr>
+                            <td class="label-col">Drug coverage</td>
+                            <td>Separate Part D plan required</td>
+                            <td>Often bundled in plan</td>
+                        </tr>
+                        <tr>
+                            <td class="label-col">Dental / vision / hearing</td>
+                            <td>Not covered by Original Medicare</td>
+                            <td>Some plans include extras</td>
+                        </tr>
+                        <tr>
+                            <td class="label-col">Switching later</td>
+                            <td>Flexible; Medigap may need underwriting if added later</td>
+                            <td>Plans change annually; returning to Medigap may involve underwriting</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-            <a href="https://www.ssa.gov/pubs/EN-05-10069.pdf" target="_blank" class="source-link">Source: SSA Publication - How Work Affects Your Benefits &rarr;</a>
+            <div class="callout">
+                <strong>Coverage gap:</strong> Original Medicare does not cover most long-term care, routine dental, routine vision, or hearing aids. Plan for those separately.
+                <a href="https://www.medicare.gov/providers-services/original-medicare/not-covered" target="_blank" rel="noopener" class="source-link" style="display:block; margin-top:0.5rem;">Medicare.gov: What's not covered</a>
+            </div>
         </section>
 
-        <section id="panel-401k" class="content-panel" role="tabpanel" aria-labelledby="tab-401k">
-            <h2>401(k) and IRA Regulatory Frameworks (2026 Caps)</h2>
-            <p>Accessing tax-advantaged retirement plans involves precise regulatory age hurdles and structural limits updated under the SECURE 2.0 Act.</p>
-            
-            <div class="matrix-grid">
-                <div class="matrix-box pros">
-                    <h3>Penalty-Free Thresholds & Catch-Ups</h3>
-                    <ul>
-                        <li><strong>Age 59½ Boundary:</strong> The formal standard threshold where the IRS 10% early withdrawal penalty expires for standard elective distributions.</li>
-                        <li><strong>Age 50+ Catch-Up (2026 Limits):</strong> Allows an extra $8,000 deferral into employer 401(k) structures (Total: $32,500) and an extra $1,100 into traditional/Roth IRAs.</li>
-                        <li><strong>Age 60–63 Super Catch-Up:</strong> SECURE 2.0 locks in a specialized higher contribution limit of $11,250 for this precise cohort.</li>
-                    </ul>
+        <!-- OTHER TOPICS -->
+        <section id="more" class="section fade-in">
+            <p class="section__eyebrow">Also worth discussing</p>
+            <h2>Other retirement planning topics</h2>
+            <div class="topic-grid">
+                <div class="topic-card">
+                    <h3>Income taxes</h3>
+                    <p>Social Security, pension, IRA, and 401(k) income can be taxed differently. Check federal and state treatment before choosing a drawdown order.</p>
                 </div>
-                <div class="matrix-box cons">
-                    <h3>Tax Vulnerabilities & High-Earner Mandates</h3>
-                    <ul>
-                        <li><strong>The Roth Catch-Up Mandate:</strong> Workers earning more than $150,000 in prior-year FICA compensation are legally required to divert all catch-up contributions to after-tax Roth accounts.</li>
-                        <li><strong>Required Minimum Distributions (RMDs):</strong> Non-Roth accounts cannot defer taxes indefinitely. Under current legislation, RMDs must begin at age 73, shifting to age 75 starting in 2033.</li>
-                    </ul>
+                <div class="topic-card">
+                    <h3>Long-term care</h3>
+                    <p>Medicare has limited long-term care coverage. Family caregiving, Medicaid eligibility, and home modifications deserve early discussion.</p>
+                </div>
+                <div class="topic-card">
+                    <h3>Housing &amp; home equity</h3>
+                    <p>Reverse mortgages are for homeowners 62+, but CFPB warns balances grow and obligations for taxes, insurance, and upkeep remain.</p>
+                </div>
+                <div class="topic-card">
+                    <h3>Estate basics</h3>
+                    <p>Beneficiary forms, wills, powers of attorney, and healthcare proxies can prevent family confusion during stressful moments.</p>
+                </div>
+                <div class="topic-card">
+                    <h3>Fraud prevention</h3>
+                    <p>Retirees are frequent scam targets. Treat urgent calls, gift-card requests, and guaranteed-return investments as red flags.</p>
+                </div>
+                <div class="topic-card">
+                    <h3>Over-50 benefits</h3>
+                    <p>National Parks Senior Pass (62+), AARP membership (50+), senior tax deductions (IRS), and local services via Eldercare Locator.</p>
                 </div>
             </div>
-            <a href="https://www.irs.gov/newsroom/401k-limit-increases-to-24500-for-2026-ira-limit-increases-to-7500" target="_blank" class="source-link">Source: IRS Code Notice 2025-67 &rarr;</a>
         </section>
 
-        <section id="panel-medical" class="content-panel" role="tabpanel" aria-labelledby="tab-medical">
-            <h2>Healthcare Gaps & The Health Savings Account (HSA) Loophole</h2>
-            <p>Leaving a traditional career path in your 50s opens up a temporary coverage gap before standard senior healthcare systems activate at age 65.</p>
-            
-            <div class="matrix-grid">
-                <div class="matrix-box pros">
-                    <h3>The Triple Tax-Advantaged HSA Strategy</h3>
-                    <ul>
-                        <li><strong>The Age 65 Conversion:</strong> Prior to age 65, non-medical HSA withdrawals face a 20% penalty. At age 65, this penalty completely expires. </li>
-                        <li><strong>Traditional IRA Treatment:</strong> Post-65, an HSA can function exactly like a traditional IRA—funds can be withdrawn for any non-medical reason and are taxed simply at your ordinary income bracket.</li>
-                        <li><strong>Tax-Free Health Coverage:</strong> If used for valid medical expenses, distributions remain 100% tax-free, creating a uniquely powerful retirement asset vehicle.</li>
-                    </ul>
+        <!-- CHECKLIST -->
+        <section id="checklist" class="section fade-in">
+            <p class="section__eyebrow">Family checklist</p>
+            <h2>What to gather before a retirement meeting</h2>
+            <p class="section__intro">Check items off as you gather them. Your progress is saved in this browser.</p>
+
+            <div class="checklist-header">
+                <div class="checklist-progress__bar" role="progressbar" aria-label="Checklist completion progress">
+                    <div class="checklist-progress__fill" id="checklist-fill" style="width:0%"></div>
                 </div>
-                <div class="matrix-box cons">
-                    <h3>Medicare Age 65 Parameters</h3>
-                    <ul>
-                        <li><strong>The Seven-Month Window:</strong> Initial enrollment spans from 3 months before your 65th birthday month to 3 months after. </li>
-                        <li><strong>Lifetime Late Penalties:</strong> Missing this structural window incurs a permanent, lifelong 10% premium penalty for Part B coverage for every 12-month period enrollment is delayed.</li>
-                    </ul>
+                <span class="checklist-progress__text" id="checklist-count">0 of 0 items</span>
+            </div>
+
+            <div class="checklist-sections">
+                <div class="checklist-card">
+                    <h3>Income &amp; benefits</h3>
+                    <div class="check-item"><input type="checkbox" id="c1"><label for="c1">SSA account logins and benefit estimates for both spouses</label></div>
+                    <div class="check-item"><input type="checkbox" id="c2"><label for="c2">Pension and annuity statements</label></div>
+                    <div class="check-item"><input type="checkbox" id="c3"><label for="c3">401(k), IRA, Roth IRA, and brokerage statements</label></div>
+                    <div class="check-item"><input type="checkbox" id="c4"><label for="c4">Expected part-time or consulting income</label></div>
+                </div>
+                <div class="checklist-card">
+                    <h3>Healthcare</h3>
+                    <div class="check-item"><input type="checkbox" id="c5"><label for="c5">Medicare cards and enrollment dates</label></div>
+                    <div class="check-item"><input type="checkbox" id="c6"><label for="c6">Employer retiree coverage details</label></div>
+                    <div class="check-item"><input type="checkbox" id="c7"><label for="c7">Current prescriptions, doctors, and pharmacies</label></div>
+                    <div class="check-item"><input type="checkbox" id="c8"><label for="c8">Dental, vision, and hearing coverage status</label></div>
+                </div>
+                <div class="checklist-card">
+                    <h3>Household finances</h3>
+                    <div class="check-item"><input type="checkbox" id="c9"><label for="c9">Monthly spending, debts, mortgage or rent</label></div>
+                    <div class="check-item"><input type="checkbox" id="c10"><label for="c10">Emergency fund and bank accounts</label></div>
+                    <div class="check-item"><input type="checkbox" id="c11"><label for="c11">Property records and major maintenance needs</label></div>
+                    <div class="check-item"><input type="checkbox" id="c12"><label for="c12">Automatic payments and subscription list</label></div>
+                </div>
+                <div class="checklist-card">
+                    <h3>Family protection</h3>
+                    <div class="check-item"><input type="checkbox" id="c13"><label for="c13">Beneficiary forms for accounts and life insurance</label></div>
+                    <div class="check-item"><input type="checkbox" id="c14"><label for="c14">Will, power of attorney, healthcare proxy</label></div>
+                    <div class="check-item"><input type="checkbox" id="c15"><label for="c15">Emergency contacts and trusted helper list</label></div>
+                    <div class="check-item"><input type="checkbox" id="c16"><label for="c16">Passwords plan and account access documentation</label></div>
                 </div>
             </div>
-            <a href="https://www.ssa.gov/faqs/en/questions/KA-01885.html" target="_blank" class="source-link">Source: Medicare National Eligibility Metrics &rarr;</a>
+
+            <button class="checklist-reset" id="checklist-reset" aria-label="Reset all checklist items">&#8635; Reset checklist</button>
         </section>
 
-        <section id="panel-discounts" class="content-panel" role="tabpanel" aria-labelledby="tab-discounts">
-            <h2>Over-50 Verified Non-Commercial Benefits</h2>
-            <p>Reaching age 50 changes your eligibility profile within several national organizations, municipal frameworks, and statutory systems.</p>
-            
-            <div class="matrix-grid">
-                <div class="matrix-box pros">
-                    <h3>Institutional Framework Access</h3>
-                    <ul>
-                        <li><strong>AARP System Enlistment:</strong> Full operational membership options scale precisely at age 50, providing structural access to auxiliary group programs.</li>
-                        <li><strong>National Parks Senior Passes:</strong> Statutory lifelong access pathways to federally managed lands trigger precisely at age 62 for a flat fee.</li>
-                    </ul>
-                </div>
-                <div class="matrix-box cons">
-                    <h3>Operational Limitations</h3>
-                    <ul>
-                        <li><strong>Commercial Variability:</strong> Private sector age cuts fluctuate widely (often switching dynamically between 55, 60, and 65).</li>
-                        <li><strong>Locale Dependency:</strong> Municipal property tax relief clauses targeting older cohorts are subject to geographical boundary shifts.</li>
-                    </ul>
-                </div>
-            </div>
-            <a href="https://www.aarp.org" target="_blank" class="source-link">Source: AARP Structural Guidelines & Statutory Park Systems &rarr;</a>
+        <!-- SOURCES -->
+        <section id="sources" class="section fade-in">
+            <p class="section__eyebrow">Verification</p>
+            <h2>Sources cited</h2>
+            <p class="section__intro">Source review date: May 25, 2026. Verify current rules at each source before acting.</p>
+            <ol class="sources-list" aria-label="Cited sources">
+                <li><a href="https://www.ssa.gov/benefits/retirement" target="_blank" rel="noopener">SSA: Retirement benefits overview</a></li>
+                <li><a href="https://www.ssa.gov/benefits/retirement/planner/ageincrease.html" target="_blank" rel="noopener">SSA: Full retirement age by birth year</a></li>
+                <li><a href="https://www.ssa.gov/faqs/en/questions/KA-03391.html" target="_blank" rel="noopener">SSA: When to start receiving retirement benefits</a></li>
+                <li><a href="https://www.ssa.gov/family" target="_blank" rel="noopener">SSA: Family and spousal benefits</a></li>
+                <li><a href="https://www.ssa.gov/survivor" target="_blank" rel="noopener">SSA: Survivor benefits</a></li>
+                <li><a href="https://www.irs.gov/retirement-plans/plan-participant-employee/401k-resource-guide-plan-participants-general-distribution-rules" target="_blank" rel="noopener">IRS: 401(k) general distribution rules</a></li>
+                <li><a href="https://www.irs.gov/retirement-plans/plan-participant-employee/retirement-topics-tax-on-early-distributions" target="_blank" rel="noopener">IRS: Early distribution additional tax and exceptions</a></li>
+                <li><a href="https://www.irs.gov/retirement-plans/retirement-plan-and-ira-required-minimum-distributions-faqs" target="_blank" rel="noopener">IRS: Required Minimum Distribution FAQs</a></li>
+                <li><a href="https://www.medicare.gov/basics/get-started-with-medicare/sign-up/when-does-medicare-coverage-start" target="_blank" rel="noopener">Medicare.gov: When Medicare coverage starts</a></li>
+                <li><a href="https://www.medicare.gov/what-medicare-covers/your-medicare-coverage-choices" target="_blank" rel="noopener">Medicare.gov: Original Medicare vs. Medicare Advantage</a></li>
+                <li><a href="https://www.medicare.gov/providers-services/original-medicare/not-covered" target="_blank" rel="noopener">Medicare.gov: What Original Medicare does not cover</a></li>
+                <li><a href="https://www.medicare.gov/coverage/long-term-care" target="_blank" rel="noopener">Medicare.gov: Long-term care coverage</a></li>
+                <li><a href="https://www.nps.gov/planyourvisit/passes.htm" target="_blank" rel="noopener">National Park Service: Senior passes</a></li>
+                <li><a href="https://eldercare.acl.gov/" target="_blank" rel="noopener">ACL: Eldercare Locator</a></li>
+                <li><a href="https://www.irs.gov/individuals/seniors-retirees" target="_blank" rel="noopener">IRS: Seniors and retirees resources</a></li>
+                <li><a href="https://www.consumerfinance.gov/consumer-tools/reverse-mortgages/" target="_blank" rel="noopener">CFPB: Reverse mortgage loans</a></li>
+                <li><a href="https://www.usa.gov/approaching-retirement" target="_blank" rel="noopener">USA.gov: Approaching retirement</a></li>
+            </ol>
         </section>
+
     </main>
+</div>
 
-    <section class="observability-section">
-        <div class="obs-header">
-            <div class="obs-title">[⚡] LIVE AI OBSERVABILITY ENGINE</div>
-            <div class="obs-indicator"><span class="obs-dot"></span>Telemetry Active</div>
-        </div>
-        <div class="obs-grid">
-            <div class="obs-card" id="card-tokens">
-                <div class="obs-label">Active Panel Tokens (Estimated)</div>
-                <div class="obs-value" id="obs-tokens">Calculating...</div>
-            </div>
-            <div class="obs-card">
-                <div class="obs-label">Interactions Detected</div>
-                <div class="obs-value" id="obs-clicks">1</div>
-            </div>
-            <div class="obs-card">
-                <div class="obs-label">UI Processing Overhead</div>
-                <div class="obs-value" id="obs-latency">0.15 ms</div>
-            </div>
-            <div class="obs-card">
-                <div class="obs-label">Active Context Encoder</div>
-                <div class="obs-value">cl100k_base (Est.)</div>
-            </div>
-        </div>
-    </section>
+<footer class="footer">
+    <div class="footer__inner">
+        <p>&copy; 2026 Retirement Information Hub. For educational reference only.</p>
+        <p>All information sourced from official U.S. government agencies. Verify directly with cited sources before making decisions.</p>
+    </div>
+</footer>
 
-    <footer>
-        <p>&copy; 2026 Retirement Informational Library Asset. Built using semantic zero-dependency design.</p>
-    </footer>
+<button id="back-to-top" aria-label="Back to top" title="Back to top">&#8593;</button>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const tabs = document.querySelectorAll('.tab-btn');
-            const panels = document.querySelectorAll('.content-panel');
-            let interactionCount = 1;
+<script>
+    // SCROLL PROGRESS + BACK TO TOP
+    const progressBar = document.getElementById('progress-bar');
+    const backToTop   = document.getElementById('back-to-top');
 
-            // TOKEN QUANTIFICATION ENGINE (Standard cl100k_base Statistical Rule)
-            const computePanelTokens = (element) => {
-                if (!element) return 0;
-                const rawText = element.innerText || element.textContent;
-                
-                // Clean extra whitespaces to preserve accurate tracking string metrics
-                const normalizedText = rawText.trim().replace(/\s+/g, ' ');
-                if (!normalizedText) return 0;
+    window.addEventListener('scroll', () => {
+        const scrollTop  = window.scrollY;
+        const docHeight  = document.documentElement.scrollHeight - window.innerHeight;
+        const pct        = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+        progressBar.style.width = pct + '%';
+        backToTop.classList.toggle('visible', scrollTop > 400);
+    }, { passive: true });
 
-                const characterLength = normalizedText.length;
-                const totalWords = normalizedText.split(' ').length;
+    backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
-                // Professional LLM Heuristic: 1 token averages ~4 characters or 0.75 words.
-                const characterBasedTokenEst = characterLength / 4;
-                const wordBasedTokenEst = totalWords / 0.75;
+    // MOBILE NAV
+    const toggle   = document.querySelector('.topnav__toggle');
+    const drawer   = document.getElementById('nav-drawer');
+    const menuIcon = document.getElementById('menu-icon');
 
-                // Blend variations to emulate byte-pair sub-word segmentation closely
-                return Math.ceil((characterBasedTokenEst + wordBasedTokenEst) / 2);
-            };
+    toggle.addEventListener('click', () => {
+        const isOpen = drawer.classList.toggle('open');
+        toggle.setAttribute('aria-expanded', isOpen);
+        drawer.setAttribute('aria-hidden', !isOpen);
+        menuIcon.innerHTML = isOpen ? '&#10005;' : '&#9776;';
+    });
 
-            const runObservabilityUpdate = (activePanel) => {
-                const startTime = performance.now();
-                
-                // 1. Process Token Count
-                const tokens = computePanelTokens(activePanel);
-                document.getElementById('obs-tokens').innerText = `${tokens} tokens`;
-
-                // 2. Trigger Flash Visualization to track update lifecycle
-                const tokenCard = document.getElementById('card-tokens');
-                tokenCard.classList.add('highlight');
-                setTimeout(() => tokenCard.classList.remove('highlight'), 300);
-
-                // 3. Compute execution footprint
-                const endTime = performance.now();
-                document.getElementById('obs-latency').innerText = (endTime - startTime).toFixed(2) + ' ms';
-            };
-
-            // TAB VIEW CONTROLLER
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    tabs.forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
-                    panels.forEach(p => p.classList.remove('active'));
-
-                    tab.classList.add('active');
-                    tab.setAttribute('aria-selected', 'true');
-                    
-                    const targetId = tab.getAttribute('aria-controls');
-                    const targetPanel = document.getElementById(targetId);
-                    targetPanel.classList.add('active');
-
-                    // Increment interaction metrics
-                    interactionCount++;
-                    document.getElementById('obs-clicks').innerText = interactionCount;
-
-                    // Execute analytics sweep
-                    runObservabilityUpdate(targetPanel);
-                });
-            });
-
-            // Initial calculation snapshot run for Panel 1 default initialization
-            const initialPanel = document.querySelector('.content-panel.active');
-            runObservabilityUpdate(initialPanel);
+    drawer.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            drawer.classList.remove('open');
+            toggle.setAttribute('aria-expanded', false);
+            drawer.setAttribute('aria-hidden', true);
+            menuIcon.innerHTML = '&#9776;';
         });
-    </script>
+    });
+
+    // SIDEBAR ACTIVE LINK ON SCROLL
+    const allNavLinks = document.querySelectorAll('.sidebar nav a, .nav-drawer a');
+    document.querySelectorAll('section[id]').forEach(s =>
+        new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    const id = '#' + e.target.id;
+                    allNavLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === id));
+                }
+            });
+        }, { rootMargin: '-15% 0px -75% 0px' }).observe(s)
+    );
+
+    // FADE IN ON SCROLL
+    document.querySelectorAll('.fade-in').forEach(el =>
+        new IntersectionObserver((entries, obs) => {
+            entries.forEach(e => {
+                if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+            });
+        }, { threshold: 0.07 }).observe(el)
+    );
+
+    // CHECKLIST WITH LOCALSTORAGE
+    const checkboxes = document.querySelectorAll('#checklist input[type="checkbox"]');
+    const fillBar    = document.getElementById('checklist-fill');
+    const countLabel = document.getElementById('checklist-count');
+    const resetBtn   = document.getElementById('checklist-reset');
+    const STORE_KEY  = 'retirement-hub-checklist-v1';
+
+    const updateProgress = () => {
+        const total   = checkboxes.length;
+        const checked = [...checkboxes].filter(c => c.checked).length;
+        fillBar.style.width = (total > 0 ? (checked / total) * 100 : 0) + '%';
+        countLabel.textContent = checked + ' of ' + total + ' items';
+    };
+
+    const saveState = () => {
+        const s = {};
+        checkboxes.forEach(cb => { s[cb.id] = cb.checked; });
+        try { localStorage.setItem(STORE_KEY, JSON.stringify(s)); } catch(e) {}
+    };
+
+    const loadState = () => {
+        try {
+            const stored = localStorage.getItem(STORE_KEY);
+            if (!stored) return;
+            const s = JSON.parse(stored);
+            checkboxes.forEach(cb => { if (s[cb.id] !== undefined) cb.checked = s[cb.id]; });
+        } catch(e) {}
+    };
+
+    checkboxes.forEach(cb => cb.addEventListener('change', () => { updateProgress(); saveState(); }));
+
+    resetBtn.addEventListener('click', () => {
+        checkboxes.forEach(cb => { cb.checked = false; });
+        try { localStorage.removeItem(STORE_KEY); } catch(e) {}
+        updateProgress();
+    });
+
+    loadState();
+    updateProgress();
+</script>
 </body>
 </html>
