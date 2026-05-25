@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Retirement Data Compendium - 2026 Core Edition</title>
+    <title>Retirement Data Compendium - Observability Core</title>
     <style>
         /* CSS VARIABLE-BASED DESIGN SYSTEM (WCAG 2.1 AA Compliant) */
         :root {
@@ -20,6 +20,7 @@
             --focus-ring: #2563eb;
             --obs-bg: #0f172a;
             --obs-green: #38bdf8;
+            --obs-pulse: #22c55e;
         }
 
         * {
@@ -198,19 +199,45 @@
             border: 1px solid #334155;
         }
 
+        .obs-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 0.5rem;
+        }
+
         .obs-title {
             color: var(--obs-green);
             font-family: monospace;
-            font-size: 1.3rem;
-            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .obs-indicator {
+            font-family: monospace;
+            font-size: 0.85rem;
+            background: #1e293b;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            color: #a7f3d0;
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
 
+        .obs-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--obs-pulse);
+            border-radius: 50%;
+            display: inline-block;
+        }
+
         .obs-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 1rem;
             font-family: monospace;
         }
@@ -220,16 +247,23 @@
             padding: 1rem;
             border-radius: 4px;
             border-left: 3px solid var(--obs-green);
+            transition: all 0.3s ease;
+        }
+
+        .obs-card.highlight {
+            border-left-color: var(--obs-pulse);
+            background: #14532d;
         }
 
         .obs-label {
             font-size: 0.8rem;
             color: #94a3b8;
             text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         .obs-value {
-            font-size: 1.2rem;
+            font-size: 1.25rem;
             font-weight: bold;
             color: #f1f5f9;
             margin-top: 0.25rem;
@@ -256,7 +290,6 @@
     </header>
 
     <main>
-        <!-- NAVIGATION TABS -->
         <nav class="tab-navigation" role="tablist" aria-label="Retirement Topics">
             <button class="tab-btn active" role="tab" aria-selected="true" aria-controls="panel-age" id="tab-age">1. Retirement Age</button>
             <button class="tab-btn" role="tab" aria-selected="false" aria-controls="panel-ss" id="tab-ss">2. Social Security</button>
@@ -266,7 +299,6 @@
             <button class="tab-btn" role="tab" aria-selected="false" aria-controls="panel-discounts" id="tab-discounts">6. Over-50 Benefits</button>
         </nav>
 
-        <!-- PANEL 1: RETIREMENT AGE -->
         <section id="panel-age" class="content-panel active" role="tabpanel" aria-labelledby="tab-age">
             <h2>Statutory Definitions of Retirement Age</h2>
             <p>Under United States federal statutes, "Retirement Age" is not a uniform data point. It shifts depending on whether a citizen is referencing Social Security rules, pension parameters, or penalty-free asset accessibility terms.</p>
@@ -292,7 +324,6 @@
             <a href="https://www.ssa.gov/oact/solvency/provisions/retireage.html" target="_blank" class="source-link">Source: Social Security Administration (Solvency Provisions) &rarr;</a>
         </section>
 
-        <!-- PANEL 2: SOCIAL SECURITY TIMELINES -->
         <section id="panel-ss" class="content-panel" role="tabpanel" aria-labelledby="tab-ss">
             <h2>Social Security Claiming Timelines</h2>
             <p>The selection of a deployment date for Social Security distributions fundamentally dictates monthly cash flows via immutable legal formulas.</p>
@@ -316,7 +347,6 @@
             <a href="https://www.ssa.gov/faqs/en/questions/KA-01897.html" target="_blank" class="source-link">Source: Social Security Administration FAQ &rarr;</a>
         </section>
 
-        <!-- PANEL 3: WORKING IN RETIREMENT -->
         <section id="panel-work" class="content-panel" role="tabpanel" aria-labelledby="tab-work">
             <h2>The Phased Retirement Earnings Test</h2>
             <p>Choosing to work part-time or consult while concurrently drawing early Social Security benefits triggers strict structural earnings limits monitored by the federal government.</p>
@@ -340,7 +370,6 @@
             <a href="https://www.ssa.gov/pubs/EN-05-10069.pdf" target="_blank" class="source-link">Source: SSA Publication - How Work Affects Your Benefits &rarr;</a>
         </section>
 
-        <!-- PANEL 4: 401K/IRA WITHDRAWAL BOUNDARIES -->
         <section id="panel-401k" class="content-panel" role="tabpanel" aria-labelledby="tab-401k">
             <h2>401(k) and IRA Regulatory Frameworks (2026 Caps)</h2>
             <p>Accessing tax-advantaged retirement plans involves precise regulatory age hurdles and structural limits updated under the SECURE 2.0 Act.</p>
@@ -365,7 +394,6 @@
             <a href="https://www.irs.gov/newsroom/401k-limit-increases-to-24500-for-2026-ira-limit-increases-to-7500" target="_blank" class="source-link">Source: IRS Code Notice 2025-67 &rarr;</a>
         </section>
 
-        <!-- PANEL 5: MEDICAL BENEFITS & THE HSA LOOPHOLE -->
         <section id="panel-medical" class="content-panel" role="tabpanel" aria-labelledby="tab-medical">
             <h2>Healthcare Gaps & The Health Savings Account (HSA) Loophole</h2>
             <p>Leaving a traditional career path in your 50s opens up a temporary coverage gap before standard senior healthcare systems activate at age 65.</p>
@@ -390,7 +418,6 @@
             <a href="https://www.ssa.gov/faqs/en/questions/KA-01885.html" target="_blank" class="source-link">Source: Medicare National Eligibility Metrics &rarr;</a>
         </section>
 
-        <!-- PANEL 6: VERIFIABLE NON-COMMERCIAL DISCOUNTS -->
         <section id="panel-discounts" class="content-panel" role="tabpanel" aria-labelledby="tab-discounts">
             <h2>Over-50 Verified Non-Commercial Benefits</h2>
             <p>Reaching age 50 changes your eligibility profile within several national organizations, municipal frameworks, and statutory systems.</p>
@@ -415,25 +442,27 @@
         </section>
     </main>
 
-    <!-- LIVE AI OBSERVABILITY & DIAGNOSTIC TELEMETRY -->
     <section class="observability-section">
-        <div class="obs-title">[⚡] LIVE APPLICATION OBSERVABILITY ENGINE</div>
+        <div class="obs-header">
+            <div class="obs-title">[⚡] LIVE AI OBSERVABILITY ENGINE</div>
+            <div class="obs-indicator"><span class="obs-dot"></span>Telemetry Active</div>
+        </div>
         <div class="obs-grid">
-            <div class="obs-card">
-                <div class="obs-label">Pipeline Latency</div>
-                <div class="obs-value" id="obs-latency">-- ms</div>
+            <div class="obs-card" id="card-tokens">
+                <div class="obs-label">Active Panel Tokens (Estimated)</div>
+                <div class="obs-value" id="obs-tokens">Calculating...</div>
             </div>
             <div class="obs-card">
-                <div class="obs-label">Memory Footprint</div>
-                <div class="obs-value" id="obs-memory">-- MB</div>
+                <div class="obs-label">Interactions Detected</div>
+                <div class="obs-value" id="obs-clicks">1</div>
             </div>
             <div class="obs-card">
-                <div class="obs-label">DOM Node Count</div>
-                <div class="obs-value" id="obs-nodes">--</div>
+                <div class="obs-label">UI Processing Overhead</div>
+                <div class="obs-value" id="obs-latency">0.15 ms</div>
             </div>
             <div class="obs-card">
-                <div class="obs-label">LLM Context Year</div>
-                <div class="obs-value">2026 Core</div>
+                <div class="obs-label">Active Context Encoder</div>
+                <div class="obs-value">cl100k_base (Est.)</div>
             </div>
         </div>
     </section>
@@ -442,17 +471,52 @@
         <p>&copy; 2026 Retirement Informational Library Asset. Built using semantic zero-dependency design.</p>
     </footer>
 
-    <!-- INTERACTIVE COMPONENT BEHAVIOR CONTROLLER & OBSERVABILITY ENGINE -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // TAB VIEW CONTROLLER
             const tabs = document.querySelectorAll('.tab-btn');
             const panels = document.querySelectorAll('.content-panel');
+            let interactionCount = 1;
 
+            // TOKEN QUANTIFICATION ENGINE (Standard cl100k_base Statistical Rule)
+            const computePanelTokens = (element) => {
+                if (!element) return 0;
+                const rawText = element.innerText || element.textContent;
+                
+                // Clean extra whitespaces to preserve accurate tracking string metrics
+                const normalizedText = rawText.trim().replace(/\s+/g, ' ');
+                if (!normalizedText) return 0;
+
+                const characterLength = normalizedText.length;
+                const totalWords = normalizedText.split(' ').length;
+
+                // Professional LLM Heuristic: 1 token averages ~4 characters or 0.75 words.
+                const characterBasedTokenEst = characterLength / 4;
+                const wordBasedTokenEst = totalWords / 0.75;
+
+                // Blend variations to emulate byte-pair sub-word segmentation closely
+                return Math.ceil((characterBasedTokenEst + wordBasedTokenEst) / 2);
+            };
+
+            const runObservabilityUpdate = (activePanel) => {
+                const startTime = performance.now();
+                
+                // 1. Process Token Count
+                const tokens = computePanelTokens(activePanel);
+                document.getElementById('obs-tokens').innerText = `${tokens} tokens`;
+
+                // 2. Trigger Flash Visualization to track update lifecycle
+                const tokenCard = document.getElementById('card-tokens');
+                tokenCard.classList.add('highlight');
+                setTimeout(() => tokenCard.classList.remove('highlight'), 300);
+
+                // 3. Compute execution footprint
+                const endTime = performance.now();
+                document.getElementById('obs-latency').innerText = (endTime - startTime).toFixed(2) + ' ms';
+            };
+
+            // TAB VIEW CONTROLLER
             tabs.forEach(tab => {
                 tab.addEventListener('click', () => {
-                    const startTime = performance.now();
-                    
                     tabs.forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
                     panels.forEach(p => p.classList.remove('active'));
 
@@ -460,33 +524,21 @@
                     tab.setAttribute('aria-selected', 'true');
                     
                     const targetId = tab.getAttribute('aria-controls');
-                    document.getElementById(targetId).classList.add('active');
-                    
-                    // Trace layout switch execution speed
-                    const endTime = performance.now();
-                    document.getElementById('obs-latency').innerText = (endTime - startTime).toFixed(2) + ' ms';
+                    const targetPanel = document.getElementById(targetId);
+                    targetPanel.classList.add('active');
+
+                    // Increment interaction metrics
+                    interactionCount++;
+                    document.getElementById('obs-clicks').innerText = interactionCount;
+
+                    // Execute analytics sweep
+                    runObservabilityUpdate(targetPanel);
                 });
             });
 
-            // REAL-TIME APP MONITORING TELEMETRY
-            const collectMetrics = () => {
-                // Node Count Trace
-                const nodes = document.getElementsByTagName('*').length;
-                document.getElementById('obs-nodes').innerText = nodes;
-
-                // Memory Trace (Chrome/Edge/Opera runtime diagnostic extraction)
-                if (window.performance && window.performance.memory) {
-                    const memoryUsed = (window.performance.memory.usedJSHeapSize / (1024 * 1024)).toFixed(2);
-                    document.getElementById('obs-memory').innerText = memoryUsed + ' MB';
-                } else {
-                    document.getElementById('obs-memory').innerText = 'Native API Protected';
-                }
-            };
-
-            // Initial telemetry snapshot and automated lifecycle telemetry loops
-            collectMetrics();
-            setInterval(collectMetrics, 3000);
-            document.getElementById('obs-latency').innerText = '0.12 ms';
+            // Initial calculation snapshot run for Panel 1 default initialization
+            const initialPanel = document.querySelector('.content-panel.active');
+            runObservabilityUpdate(initialPanel);
         });
     </script>
 </body>
