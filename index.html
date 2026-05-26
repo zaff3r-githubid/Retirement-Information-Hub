@@ -2,9 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Retirement Information Hub</title>
     <meta name="description" content="A cited, plain-English retirement reference covering Social Security, 401(k) withdrawals, Medicare, and planning milestones.">
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="format-detection" content="telephone=no">
     <style>
         :root {
             /* Apple color palette */
@@ -598,6 +602,90 @@
             display: block; font-size: 0.68rem;
             color: rgba(255,255,255,0.28);
             margin-top: 0.15rem; letter-spacing: 0.01em;
+        }
+
+        /* MOBILE / IOS / ANDROID FIXES */
+
+        /* Safe area insets for iPhone notch and home indicator */
+        body {
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
+        }
+        .topnav {
+            padding-left: max(2rem, env(safe-area-inset-left));
+            padding-right: max(2rem, env(safe-area-inset-right));
+        }
+        .footer, .disclaimer-bar, .obs-panel {
+            padding-left: max(2rem, env(safe-area-inset-left));
+            padding-right: max(2rem, env(safe-area-inset-right));
+            padding-bottom: max(1.25rem, env(safe-area-inset-bottom));
+        }
+
+        /* Prevent iOS text size inflation on rotate */
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+
+        /* Smooth momentum scrolling on iOS */
+        body, .nav-drawer, .sidebar {
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Minimum 44x44px touch targets (Apple HIG standard) */
+        .topnav__toggle,
+        .btn,
+        .tab-btn,
+        .checklist-reset,
+        #back-to-top {
+            min-height: 44px;
+            min-width: 44px;
+        }
+        .check-item input[type="checkbox"] {
+            min-width: 22px;
+            min-height: 22px;
+        }
+        .nav-drawer a {
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+        }
+        .source-link {
+            padding: 0.25rem 0;
+            min-height: 44px;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        /* Fix hero gradient text on older iOS Safari */
+        @supports not (-webkit-background-clip: text) {
+            .hero h1 {
+                background: none;
+                -webkit-text-fill-color: white;
+                color: white;
+            }
+        }
+
+        /* Fix backdrop-filter fallback for browsers that don't support it */
+        @supports not (backdrop-filter: blur(1px)) {
+            .topnav {
+                background: rgba(0, 0, 0, 0.95);
+            }
+        }
+
+        /* Tighter padding on small screens */
+        @media (max-width: 480px) {
+            .hero { padding: 3.5rem 1.25rem 3rem; }
+            .main-content { padding: 0 1.25rem; }
+            .section { padding: 2.75rem 0; }
+            .obs-panel { padding: 1rem 1.25rem; }
+            .disclaimer-bar { padding: 1.5rem 1.25rem; }
+            .footer { padding: 2rem 1.25rem; }
+            .topnav { padding: 0 1.25rem; }
+            .obs-metric { min-width: 100px; }
+            .map-card { padding: 1.1rem; }
+            .checklist-card { padding: 1.1rem; }
+            .compare-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
         }
 
         @media print {
